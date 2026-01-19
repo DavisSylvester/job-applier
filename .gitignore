@@ -1,0 +1,25 @@
+# Bun
+node_modules
+*.log
+dist/
+.env
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+
+# Data
+data/applications.json
+data/screenshots/
+*.pdf
+*.docx
+
+# Testing
+coverage/
+.nyc_output/

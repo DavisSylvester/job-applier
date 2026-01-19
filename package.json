@@ -1,0 +1,29 @@
+{
+  "name": "job-applier",
+  "version": "1.0.0",
+  "description": "Automated job application system for Indeed using Bun and TypeScript",
+  "type": "module",
+  "module": "src/index.mts",
+  "scripts": {
+    "dev": "bun run --watch src/index.mts",
+    "start": "bun run src/index.mts",
+    "lint": "eslint src/**/*.mts",
+    "test": "bun test",
+    "build": "bun build src/index.mts --outdir ./dist --target bun"
+  },
+  "dependencies": {
+    "playwright": "^1.40.1",
+    "playwright-extra": "^4.3.6",
+    "puppeteer-extra-plugin-stealth": "^2.11.2",
+    "axios": "^1.6.2",
+    "dotenv": "^16.3.1",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@typescript-eslint/eslint-plugin": "^6.15.0",
+    "@typescript-eslint/parser": "^6.15.0",
+    "eslint": "^8.56.0",
+    "typescript": "^5.3.3"
+  }
+}
