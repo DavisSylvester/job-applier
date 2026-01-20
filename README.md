@@ -6,20 +6,23 @@ An automated job application system built with Bun and TypeScript that searches 
 
 - **Automated Job Search**: Search for jobs using multiple keywords
 - **Auto-Apply**: Automatically apply to jobs that match your criteria
-- **Proxy Support**: Built-in support for reverse proxy services (Decodio or similar)
+- **MongoDB Storage**: Store and track all found jobs in MongoDB database
+- **Smart Proxy Support**: Session-based IP rotation for bypassing detection
+- **Date Filtering**: Only show jobs posted within the last N days
 - **Browser Automation**: Uses Playwright for realistic browser interactions
 - **Anti-Detection**: Includes stealth techniques to avoid bot detection
 - **Daily Limits**: Configurable application limits per day
 - **Dry Run Mode**: Test the system without actually applying
-- **Application Tracking**: Stores all applications and job data locally
+- **Application Tracking**: Stores all applications and job data
 - **Resume Upload**: Automatically uploads your resume when needed
 
 ## 📋 Prerequisites
 
 - [Bun](https://bun.sh/) installed on your system
 - Indeed account credentials
+- MongoDB Atlas account or MongoDB instance
 - Resume in PDF format
-- (Optional) Proxy service credentials (e.g., Decodio)
+- (Optional) Smart Proxy service credentials (Smartproxy, Bright Data, etc.)
 
 ## 🛠️ Installation
 
@@ -42,15 +45,24 @@ cp .env.example .env
 ```env
 INDEED_EMAIL=your-email@example.com
 INDEED_PASSWORD=your-password
+MongoDB Configuration
+MONGO_USERNAME=your-mongodb-username
+MONGO_PASSWORD=your-mongodb-password
+MONGO_HOST=mongodb.net
+MONGO_CLUSTER=cluster0
+MONGO_DB_NAME=job-applier
 
 # Proxy Configuration
-PROXY_HOST=proxy.decodio.com
+PROXY_HOST=proxy.example.com
 PROXY_PORT=8080
 USE_PROXY=true
+SMART_PROXY=true
 
 # Job Search
 JOB_SEARCH_KEYWORDS=software engineer,developer
 JOB_LOCATION=Remote
+JOB_RADIUS=50
+JOB_MAX_DAYS_OLD=5Remote
 JOB_RADIUS=50
 
 # Application Settings
@@ -82,15 +94,36 @@ bun start
 ```
 
 ### Dry Run (test without applying):
-```bash
-# Set DRY_RUN=true in .env, then:
-bun start
+```bashsmart proxy services with session-based IP rotation:
+
+```env
+PROXY_HOST=your-proxy-host.com
+PROXY_PORT=8080
+PROXY_USERNAME=your-username
+PROXY_PASSWORD=your-password
+USE_PROXY=true
+SMART_PROXY=true
+PROXY_ROTATION_URL=https://api.example.com/rotate
 ```
 
-## ⚙️ Configuration
+See [docs/SMART_PROXY_SETUP.md](docs/SMART_PROXY_SETUP.md) for detailed configuration.
 
-### Proxy Settings
+### MongoDB Configuration
 
+Configure MongoDB connection for job storage:
+
+```env
+MONGO_USERNAME=your-mongodb-username
+MONGO_PASSWORD=your-mongodb-password
+MONGO_HOST=mongodb.net
+MONGO_CLUSTER=cluster0
+MONGO_DB_NAME=job-applier
+```
+JOB_MAX_DAYS_OLD=5
+```
+
+The `JOB_MAX_DAYS_OLD` parameter filters jobs to only show those posted within the last N days. See [docs/DATE_FILTERING.md](docs/DATE_FILTERING.md) for details.
+See [docs/MONGODB_INTEGRATION.md](docs/MONGODB_INTEGRATION.md) for setup instructions.
 The application supports reverse proxy services like Decodio. Configure in `.env`:
 
 ```env
@@ -117,15 +150,24 @@ AUTO_APPLY=true
 DRY_RUN=false
 HEADLESS=false  # Set to true to hide browser window
 ```
-
-## 📁 Project Structure
-
-```
-job-applier/
-├── src/
-│   ├── config/          # Configuration management
-│   ├── services/        # Core services
-│   │   ├── browser.service.mts
+database.service.mts
+│   │   ├── indeed.service.mts
+│   │   ├── proxy.service.mts
+│   │   └── storage.service.mts
+│   ├── models/          # MongoDB models
+│   │   └── job.model.mts
+│   ├── repositories/    # Data access layer
+│   │   └── job.repository.mts
+│   ├── interfaces/      # TypeScript interface definitions
+│   └── index.mts        # Main application entry
+├── data/                # Local data storage
+│   ├── resume.pdf       # Your resume
+│   ├── jobs.json        # Job listings (legacy)
+│   └── applications.json # Application history
+├── docs/                # Documentation
+│   ├── MONGODB_INTEGRATION.md
+│   ├── SMART_PROXY_SETUP.md
+│   └── DATE_FILTERING.md
 │   │   ├── indeed.service.mts
 │   │   ├── proxy.service.mts
 │   │   └── storage.service.mts

@@ -1,9 +1,14 @@
-import type { Page } from 'playwright';
-import type { Job, JobBoardService } from '../types/index.mts';
+import type { Page } from "playwright";
+import type { Job, JobBoardService } from "../interfaces/index.mts";
+import { JobRepository } from "../repositories/job.repository.mts";
 
 export class JobBoardsService {
-
   private boards: JobBoardService[] = [];
+  private jobRepository: JobRepository;
+
+  constructor(jobRepository: JobRepository) {
+    this.jobRepository = jobRepository;
+  }
 
   addBoard(board: JobBoardService): void {
     this.boards.push(board);
@@ -16,31 +21,65 @@ export class JobBoardsService {
   async search(
     page: Page,
     keyword: string,
-    options?: { location?: string; radius?: number }
+    options?: { location?: string; radius?: number },
   ): Promise<Job[]> {
     const results = await Promise.all(
-      this.boards.map(b => b.searchJobs(page, keyword, options))
+      this.boards.map((b) => b.searchJobs(page, keyword, options)),
     );
 
-    return this.dedupById(results.flat());
+    const dedupedJobs = this.dedupById(results.flat());
+    // Save jobs to database
+    if (dedupedJobs.length > 0) {
+      try {
+        const savedCount = await this.jobRepository.saveMany(dedupedJobs);
+        console.log(`✓ Saved ${savedCount} jobs to database`);
+      } catch (error) {
+        console.error("Failed to save jobs to database:", error);
+      }
+    }
+
+    console.log(
+      `\n✓ Search complete: Found ${dedupedJobs.length} unique jobs for "${keyword}"`,
+    );
+
+    return dedupedJobs;
   }
 
   async searchByLocations(
     page: Page,
     keyword: string,
     locations: string[],
-    radius: number
+    radius: number,
   ): Promise<Job[]> {
     const perBoardResults: Job[][] = [];
 
     for (const board of this.boards) {
       const byLocation = await Promise.all(
-        locations.map(loc => board.searchJobs(page, keyword, { location: loc, radius }))
+        locations.map((loc) =>
+          board.searchJobs(page, keyword, { location: loc, radius }),
+        ),
       );
       perBoardResults.push(...byLocation);
+      // Save jobs to database
+      if (dedupedJobs.length > 0) {
+        try {
+          const savedCount = await this.jobRepository.saveMany(dedupedJobs);
+          console.log(`✓ Saved ${savedCount} jobs to database\n`);
+        } catch (error) {
+          console.error("Failed to save jobs to database:", error);
+        }
+      }
     }
 
-    return this.dedupById(perBoardResults.flat());
+    const dedupedJobs = this.dedupById(perBoardResults.flat());
+    console.log(`\n========================================`);
+    console.log(`✓ Search complete: Found ${dedupedJobs.length} unique jobs`);
+    console.log(`  Keyword: "${keyword}"`);
+    console.log(`  Locations: ${locations.join(", ")}`);
+    console.log(`  Radius: ${radius} miles`);
+    console.log(`========================================\n`);
+
+    return dedupedJobs;
   }
 
   private dedupById(jobs: Job[]): Job[] {

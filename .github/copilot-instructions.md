@@ -25,6 +25,12 @@
 - Never use `any` type. Always use explicit types, interfaces, or `unknown` when type is truly unknown.
 - Use strict type checking and avoid type assertions unless absolutely necessary.
 - Prefer type inference where possible, but always provide explicit return types for functions.
+- all interfaces should be defined in a folder named `interfaces` grouped by feature name.
+- there should be ONLY one interface per file.
+- All source files must use the `.mts` extension for TypeScript files.
+- All import specifiers must reference `.mts` files explicitly (e.g., `import x from './file.mts'`).
+- If imports use mts extension, ensure that tsconfig.json has noEmit set to true.
+- Use ES module syntax (import/export) exclusively. Do not use CommonJS (require/module.exports).
 
 ## Elysia API Patterns
 

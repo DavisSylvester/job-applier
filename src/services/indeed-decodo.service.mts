@@ -1,10 +1,9 @@
-import type { Page } from 'playwright';
-import type { Config } from '../config/index.mts';
-import type { Job } from '../types/index.mts';
-import { IndeedService } from './indeed.service.mts';
+import type { Page } from "playwright";
+import type { Config } from "../config/index.mts";
+import type { Job } from "../interfaces/index.mts";
+import { IndeedService } from "./indeed.service.mts";
 
 export class IndeedDecodoService {
-
   private config: Config;
   private indeedService: IndeedService;
 
@@ -14,11 +13,17 @@ export class IndeedDecodoService {
   }
 
   async searchNodeJobsDallasOrZip(page: Page): Promise<Job[]> {
-    const keyword = 'nodejs';
+    const keyword = "nodejs";
 
     const [dallasJobs, zipJobs] = await Promise.all([
-      this.indeedService.searchJobs(page, keyword, { location: 'Dallas, TX', radius: 100 }),
-      this.indeedService.searchJobs(page, keyword, { location: '75495', radius: 100 }),
+      this.indeedService.searchJobs(page, keyword, {
+        location: "Dallas, TX",
+        radius: 100,
+      }),
+      this.indeedService.searchJobs(page, keyword, {
+        location: "75495",
+        radius: 100,
+      }),
     ]);
 
     const merged = this.dedupById([...dallasJobs, ...zipJobs]);
