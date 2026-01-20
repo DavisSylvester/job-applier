@@ -4,6 +4,7 @@ const ConfigSchema = z.object({
   indeed: z.object({
     email: z.string().email(),
     password: z.string().min(1),
+    authProvider: z.enum(['password', 'google']).default('password'),
   }),
   proxy: z.object({
     host: z.string(),
@@ -27,6 +28,10 @@ const ConfigSchema = z.object({
     resume: z.string(),
     coverLetter: z.string(),
   }),
+  google: z.object({
+    email: z.string().email().optional(),
+    password: z.string().optional(),
+  }).default({}),
 });
 
 export type Config = z.infer<typeof ConfigSchema>;
@@ -37,6 +42,7 @@ export function loadConfig(): Config {
     indeed: {
       email: process.env.INDEED_EMAIL || '',
       password: process.env.INDEED_PASSWORD || '',
+      authProvider: (process.env.INDEED_AUTH_PROVIDER === 'google') ? 'google' : 'password',
     },
     proxy: {
       host: process.env.PROXY_HOST || '',
@@ -59,6 +65,10 @@ export function loadConfig(): Config {
     paths: {
       resume: process.env.RESUME_PATH || './data/resume.pdf',
       coverLetter: process.env.COVER_LETTER_PATH || './data/cover-letter.txt',
+    },
+    google: {
+      email: process.env.GOOGLE_EMAIL,
+      password: process.env.GOOGLE_PASSWORD,
     },
   };
 

@@ -1,11 +1,12 @@
 import type { Page } from 'playwright';
-import type { Job } from '../types/index.mts';
+import type { Job, JobBoardService } from '../types/index.mts';
 import type { Config } from '../config/index.mts';
 
-export class IndeedService {
+export class IndeedService implements JobBoardService {
 
   private config: Config;
   private baseUrl = 'https://www.indeed.com';
+  public name = 'indeed';
 
   constructor(config: Config) {
     this.config = config;
@@ -16,18 +17,20 @@ export class IndeedService {
       console.log('Navigating to Indeed login page...');
       await page.goto(`${this.baseUrl}/account/login`, { waitUntil: 'networkidle' });
 
-      // Fill in login credentials
+      if (this.config.indeed.authProvider === 'google') {
+        return await this.loginWithGoogle(page);
+      }
+
+      // Default password-based login
       await page.fill('input[type="email"]', this.config.indeed.email);
       await page.click('button[type="submit"]');
-      
+
       await page.waitForTimeout(2000);
-      
+
       await page.fill('input[type="password"]', this.config.indeed.password);
       await page.click('button[type="submit"]');
 
-      // Wait for navigation after login
       await page.waitForLoadState('networkidle');
-
       console.log('Successfully logged in to Indeed');
       return true;
     } catch (error) {
@@ -36,9 +39,13 @@ export class IndeedService {
     }
   }
 
-  async searchJobs(page: Page, keyword: string): Promise<Job[]> {
+  async searchJobs(page: Page, keyword: string, options?: { location?: string; radius?: number }): Promise<Job[]> {
     try {
-      const searchUrl = this.buildSearchUrl(keyword);
+      const searchUrl = this.buildSearchUrl(
+        keyword,
+        options?.location,
+        options?.radius
+      );
       console.log(`Searching for jobs: ${searchUrl}`);
       
       await page.goto(searchUrl, { waitUntil: 'networkidle' });
@@ -141,13 +148,52 @@ export class IndeedService {
     }
   }
 
-  private buildSearchUrl(keyword: string): string {
+  private buildSearchUrl(keyword: string, location?: string, radius?: number): string {
     const params = new URLSearchParams({
       q: keyword,
-      l: this.config.jobSearch.location,
-      radius: this.config.jobSearch.radius.toString(),
+      l: (location ?? this.config.jobSearch.location),
+      radius: (radius ?? this.config.jobSearch.radius).toString(),
     });
 
     return `${this.baseUrl}/jobs?${params.toString()}`;
+  }
+
+  private async loginWithGoogle(page: Page): Promise<boolean> {
+    if (!this.config.google.email || !this.config.google.password) {
+      console.error('Google credentials are not set in config');
+      return false;
+    }
+
+    try {
+      const googleButtonSelector = 'button:has-text("Continue with Google"), a:has-text("Continue with Google")';
+
+      const [popup] = await Promise.all([
+        page.waitForEvent('popup'),
+        page.click(googleButtonSelector)
+      ]);
+
+      await popup.waitForLoadState('domcontentloaded');
+
+      // Enter email
+      await popup.fill('input[type="email"]', this.config.google.email);
+      await popup.click('#identifierNext, button:has-text("Next")');
+      await popup.waitForTimeout(1500);
+
+      // Enter password
+      await popup.fill('input[type="password"]', this.config.google.password);
+      await popup.click('#passwordNext, button:has-text("Next")');
+
+      // Wait for the popup to close or redirect back
+      await popup.waitForLoadState('networkidle');
+
+      // Give main page time to reflect login status
+      await page.waitForLoadState('networkidle');
+
+      console.log('Successfully logged in to Indeed via Google');
+      return true;
+    } catch (error) {
+      console.error('Google login failed:', error);
+      return false;
+    }
   }
 }

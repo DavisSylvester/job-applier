@@ -4,6 +4,7 @@ import { BrowserService } from './services/browser.service.mts';
 import { IndeedService } from './services/indeed.service.mts';
 import { StorageService } from './services/storage.service.mts';
 import { ProxyService } from './services/proxy.service.mts';
+import { JobBoardsService } from './services/job-boards.service.mts';
 import type { ApplicationResult } from './types/index.mts';
 
 async function main(): Promise<void> {
@@ -56,13 +57,23 @@ async function main(): Promise<void> {
       return;
     }
 
-    // Search for jobs with each keyword
+    // Search for jobs
     const allJobs = [];
-    for (const keyword of config.jobSearch.keywords) {
-      console.log(`\n🔍 Searching for: "${keyword}"`);
-      const jobs = await indeedService.searchJobs(page, keyword);
+
+    if (process.env.DECODO_DALLAS === 'true') {
+      console.log('\n🔍 Decodo Dallas/75495 NodeJS search (radius 100)');
+      const boards = new JobBoardsService();
+      boards.addBoard(indeedService);
+      const jobs = await boards.searchByLocations(page, 'nodejs', ['Dallas, TX', '75495'], 100);
       allJobs.push(...jobs);
       console.log(`   Found ${jobs.length} jobs`);
+    } else {
+      for (const keyword of config.jobSearch.keywords) {
+        console.log(`\n🔍 Searching for: "${keyword}"`);
+        const jobs = await indeedService.searchJobs(page, keyword);
+        allJobs.push(...jobs);
+        console.log(`   Found ${jobs.length} jobs`);
+      }
     }
 
     // Save all found jobs
