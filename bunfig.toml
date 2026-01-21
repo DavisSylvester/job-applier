@@ -1,0 +1,12 @@
+[install.scopes]
+# GitHub Packages registry for @sylvesterllc scope
+"@sylvesterllc" = { 
+  token = "$CICD_TOKEN", 
+  url = "https://npm.pkg.github.com/" 
+}
+
+# GitHub Packages registry for @davissylvester scope
+"@davissylvester" = { 
+  token = "$CICD_TOKEN", 
+  url = "https://npm.pkg.github.com/" 
+}

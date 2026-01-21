@@ -16,19 +16,14 @@
     "declaration": true,
     "declarationMap": true,
     "sourceMap": true,
+    "outDir": "./dist",
     "types": ["@types/bun"],
     "paths": {
-      "@job-applier/config": ["./libs/config/src/index.mts"],
-      "@job-applier/interfaces": ["./libs/interfaces/src/index.mts"],
-      "@job-applier/core": ["./libs/core/src/index.mts"]
+      "@job-applier/config": ["../../libs/config/src/index.mts"],
+      "@job-applier/interfaces": ["../../libs/interfaces/src/index.mts"],
+      "@job-applier/core": ["../../libs/core/src/index.mts"]
     }
   },
-  "include": [],
-  "exclude": ["node_modules", "dist"],
-  "references": [
-    { "path": "./libs/config" },
-    { "path": "./libs/interfaces" },
-    { "path": "./libs/core" },
-    { "path": "./apps/job-applier" }
-  ]
+  "include": ["src/**/*.mts", "src/**/*.ts"],
+  "exclude": ["node_modules", "dist"]
 }

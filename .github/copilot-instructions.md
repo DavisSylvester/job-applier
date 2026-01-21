@@ -32,6 +32,7 @@
 - If imports use mts extension, ensure that tsconfig.json has noEmit set to true.
 - Use ES module syntax (import/export) exclusively. Do not use CommonJS (require/module.exports).
 
+
 ## Elysia API Patterns
 
 - Routers by domain: Group endpoints under `src/api/<domain>/router.ts` using `Elysia().group('/<domain>', ...)`. Avoid mixed-domain files.
@@ -70,6 +71,7 @@
 - Use `bun run <script>` instead of `npm run <script>` or `yarn <script>` for executing scripts defined in package.json.
 - All source files must use the `.mts` extension for ESM modules.
 - All import specifiers must reference `.mts` files explicitly (e.g., `import x from './file.mts'`).
+- All bun typescript files should use a winston logger for logging instead of console.log statements.
 
 # AZURE
 

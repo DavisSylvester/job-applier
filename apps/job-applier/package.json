@@ -1,0 +1,25 @@
+{
+  "name": "@job-applier/app",
+  "version": "1.0.0",
+  "description": "Job applier application",
+  "type": "module",
+  "main": "./src/index.mts",
+  "scripts": {
+    "dev": "bun run --watch src/index.mts",
+    "start": "bun run src/index.mts",
+    "lint": "eslint src/**/*.mts",
+    "test": "bun test",
+    "build": "bun build src/index.mts --outdir ./dist --target bun",
+    "clean": "rm -rf dist node_modules"
+  },
+  "dependencies": {
+    "@job-applier/config": "workspace:*",
+    "@job-applier/interfaces": "workspace:*",
+    "@job-applier/core": "workspace:*",
+    "dotenv": "catalog:"
+  },
+  "devDependencies": {
+    "@types/bun": "catalog:dev",
+    "typescript": "catalog:dev"
+  }
+}

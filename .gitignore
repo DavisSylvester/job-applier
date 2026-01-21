@@ -4,6 +4,12 @@ node_modules
 dist/
 .env
 
+# Turborepo
+.turbo
+
+# Angular
+.angular/
+
 # OS
 .DS_Store
 Thumbs.db
@@ -19,6 +25,10 @@ data/applications.json
 data/screenshots/
 *.pdf
 *.docx
+
+# Logs
+logs/
+*.log
 
 # Testing
 coverage/

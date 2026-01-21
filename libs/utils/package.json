@@ -1,0 +1,23 @@
+{
+  "name": "@job-applier/utils",
+  "version": "1.0.0",
+  "description": "Shared utilities including logger",
+  "type": "module",
+  "main": "./src/index.mts",
+  "exports": {
+    ".": "./src/index.mts",
+    "./logger": "./src/logger.mts"
+  },
+  "scripts": {
+    "lint": "eslint src/**/*.mts",
+    "test": "bun test",
+    "clean": "rm -rf dist node_modules"
+  },
+  "dependencies": {
+    "winston": "catalog:"
+  },
+  "devDependencies": {
+    "@types/bun": "catalog:dev",
+    "typescript": "catalog:dev"
+  }
+}

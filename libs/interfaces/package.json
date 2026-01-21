@@ -1,0 +1,20 @@
+{
+  "name": "@job-applier/interfaces",
+  "version": "1.0.0",
+  "description": "Shared TypeScript interfaces",
+  "type": "module",
+  "main": "./src/index.mts",
+  "exports": {
+    ".": "./src/index.mts"
+  },
+  "scripts": {
+    "lint": "eslint src/**/*.mts",
+    "test": "bun test",
+    "clean": "rm -rf dist node_modules"
+  },
+  "devDependencies": {
+    "@types/bun": "catalog:dev",
+    "typescript": "catalog:dev",
+    "playwright": "catalog:"
+  }
+}

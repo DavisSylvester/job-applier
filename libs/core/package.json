@@ -1,0 +1,32 @@
+{
+  "name": "@job-applier/core",
+  "version": "1.0.0",
+  "description": "Core library with services, repositories, and models",
+  "type": "module",
+  "main": "./src/index.mts",
+  "exports": {
+    ".": "./src/index.mts",
+    "./services": "./src/services/index.mts",
+    "./repositories": "./src/repositories/index.mts",
+    "./models": "./src/models/index.mts"
+  },
+  "scripts": {
+    "lint": "eslint src/**/*.mts",
+    "test": "bun test",
+    "build": "bun build src/index.mts --outdir ./dist --target bun",
+    "clean": "rm -rf dist node_modules"
+  },
+  "dependencies": {
+    "@job-applier/config": "workspace:*",
+    "@job-applier/interfaces": "workspace:*",
+    "axios": "catalog:",
+    "mongodb": "catalog:",
+    "playwright": "catalog:",
+    "playwright-extra": "catalog:",
+    "puppeteer-extra-plugin-stealth": "catalog:"
+  },
+  "devDependencies": {
+    "@types/bun": "catalog:dev",
+    "typescript": "catalog:dev"
+  }
+}
